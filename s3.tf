@@ -52,5 +52,21 @@ resource "aws_s3_bucket_website_configuration" "static_website" {
 }
 
 output "production_url" {
-  value = "Your website is available at: http://${aws_s3_bucket.static_website.website_endpoint}"
+  value = "Your website is available at: http://${aws_s3_bucket_website_configuration.static_website.website_endpoint}"
+}
+
+resource "aws_s3_object" "index_html" {
+    bucket = aws_s3_bucket.static_website.id
+    key    = "index.html"
+    source = "${path.module}/build/index.html"
+    etag   = filemd5("${path.module}/build/index.html")
+    content_type = "text/html"
+}
+
+resource "aws_s3_object" "error_html" {
+    bucket = aws_s3_bucket.static_website.id
+    key    = "error.html"
+    source = "${path.module}/build/error.html"
+    etag   = filemd5("${path.module}/build/error.html")
+    content_type = "text/html"
 }
